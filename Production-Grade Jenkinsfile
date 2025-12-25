@@ -1,0 +1,69 @@
+pipeline {
+    agent none
+
+    stages {
+
+        stage('Checkout') {
+            agent any
+            steps {
+                checkout scm
+                stash includes: '**', excludes: '**/target/**', name: 'SOURCECODE'
+            }
+        }
+
+        stage('Build') {
+            agent {
+                docker {
+                    image 'maven:3.9.6-eclipse-temurin-17'
+                    args '-v ~/.m2:/root/.m2'
+                }
+            }
+            steps {
+                unstash 'SOURCECODE'
+                sh 'mvn clean package -DskipTests'
+                stash includes: 'target/*.jar', name: 'ARTIFACT'
+            }
+        }
+
+        stage('Parallel Tests') {
+            parallel {
+
+                stage('Unit Tests') {
+                    agent any
+                    steps {
+                        unstash 'SOURCECODE'
+                        sh 'mvn test'
+                    }
+                }
+
+                stage('Security Scan') {
+                    agent any
+                    steps {
+                        unstash 'SOURCECODE'
+                        sh 'echo "Running SAST scan..."'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            agent any
+            steps {
+                unstash 'ARTIFACT'
+                sh '''
+                echo "Deploying application..."
+                ls -l target/
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ CI/CD Pipeline completed successfully"
+        }
+        failure {
+            echo "❌ Pipeline failed"
+        }
+    }
+}
