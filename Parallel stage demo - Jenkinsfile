@@ -1,0 +1,30 @@
+pipeline{
+    agent any
+    tools{
+        maven 'mymaven'
+    }
+    stages{
+                stage ('Parallel stages') {
+
+                parallel {
+                    stage('Compile code') {
+                      steps {
+                        git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'
+                        echo 'Compiling the code...'
+                        sh 'mvn compile'
+
+                    }
+                }
+                stage('Review the code') {
+                    steps {
+                        echo 'Reviewing the code...'
+                        sh  'mvn pmd:pmd'
+                    }
+                    
+                }
+                
+            }
+         
+    }
+}
+}

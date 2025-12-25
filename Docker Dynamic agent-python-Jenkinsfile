@@ -1,0 +1,70 @@
+pipeline{
+    agent{
+        docker{
+            image 'python:3.11-slim'
+            args '-u root -v /root/.m2:/root/.m2'
+        }
+    }
+    environment{
+        VENV_PATH = '.venv' //virtual environment for python where the python commands work is the .venv folder
+        PYTHONPATH = '.' // The path where the above environment needs to be created
+    }
+    stages{
+        stage('Clone the repo')
+        {
+            steps{
+            git 'https://github.com/Sonal0409/Jenkins-Python-Pipeline-demo.git'
+            }
+        }
+        
+ stage('Setting up the environment')
+ {
+ steps{
+ 
+ sh '''
+ # creating virtual environment in the specified path
+  python -m venv ${VENV_PATH} 
+  #activating the virtual environment needed for python command execution
+       . ${VENV_PATH}/bin/activate  
+       pip install --upgrade pip
+       pip install -r requirements.txt
+       '''
+    }
+}
+
+stage('Review the code quality'){
+steps
+{
+    sh '''
+    #activate the virtual environment
+    . ${VENV_PATH}/bin/activate 
+  #running flake8 for code quality check on code and tests folder
+     flake8 app.py tests/  
+       '''
+}
+        }
+
+stage('Test  the code')
+{
+steps
+{
+    sh '''
+    # activate the virtual environment
+      . ${VENV_PATH}/bin/activate  
+    #running pytest for tests folder and generating junitxml report
+       pytest tests/ --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+       '''
+}
+        }
+
+stage('Archive the reports')
+{
+steps{
+  //archiving the test report
+junit 'reports/test-results.xml'  
+//archiving the coverage report
+archiveArtifacts artifacts: '**/coverage.xml', allowEmptyArchive: true  
+    }
+}
+    }
+}

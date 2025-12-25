@@ -1,0 +1,23 @@
+pipeline{
+    agent any
+    tools{
+        maven 'mymaven'
+    }
+    parameters{
+        string(name:'Person', defaultValue:'Ravi', description:'Name of the employee')
+        string(name:'Tool', defaultValue: 'Jenkins',  description: 'Tool to learn')
+        choice(name:'Env', choices:["Dev", "Test", "Prod"], description: 'Select Environment')
+        choice(name:'branch', choices:["dev", "main", "master"], description: 'Select Branch')
+    }
+    stages{
+        stage('Job1')
+        {
+            steps{
+                echo "Hello ${params.Person}"
+                echo "You have selected ${params.Tool} to learn"
+                echo "Environment selected is ${params.Env}"
+                echo "Branch selected is ${params.branch}"
+            }
+        }
+    }
+}

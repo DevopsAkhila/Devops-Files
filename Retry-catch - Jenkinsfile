@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    tools {
+        maven 'mymaven'
+    }
+    stages {
+        stage('Build the code') {
+            steps {
+                script {
+                    try {
+                        retry(3) {
+                            sh 'mvn package'  // FAILS
+                        }
+                    } catch (err) {
+                        echo "Initial build failed. Fixing..."
+                        git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'
+                        sh 'mvn compile'
+                    }
+                }
+            }
+        }
+    }
+}

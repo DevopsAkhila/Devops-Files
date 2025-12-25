@@ -1,0 +1,23 @@
+pipeline{
+    agent any
+    tools{
+        maven 'mymaven'
+    }
+    stages{
+        stage('Slack Notification')
+        {
+            steps{
+               git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'
+               sh 'mvn test'
+        }
+        post{
+            success{
+                slackSend channel: 'jenkins-demo', message: 'The jenkins build is successfully completed'
+            }
+            failure{
+                slackSend channel: 'jenkins-demo', message: 'The jenkins build is failed. Please check the console output'
+        }
+        }
+        }
+    }
+    }

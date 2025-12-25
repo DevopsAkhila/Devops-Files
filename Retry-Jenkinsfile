@@ -1,0 +1,18 @@
+pipeline{
+    agent any
+    tools{
+        maven 'mymaven'
+    }
+    stages{
+        stage ('Build the code')
+        {
+            steps{
+               // git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'-> build fails if repo is not cloned
+                retry(3) {
+  sh 'mvn package'
+}
+                
+            }
+        }
+    }
+}
