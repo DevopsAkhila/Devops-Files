@@ -3,3 +3,4 @@
 mkdir -p /tmp/lab1
 cd /tmp/lab1
 echo "Cloned the repository" >> lab1.txt
+echo "Cloned the repository" >> lab1.txt
