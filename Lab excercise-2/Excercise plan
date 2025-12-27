@@ -62,7 +62,8 @@ Verification:
 Console Snippet:text[Maven] clean compile pmd:pmd
 [INFO] --- maven-pmd-plugin:3.21.2:pmd (default-cli) @ myapp ---
 [INFO] Generating "PMD report" report    - 2 violations
-PMD Report: Accessible at <job-url>/pmd/, showing file:line violations.
+PMD Report: Accessible at lab2/
+Lab excercise-2/mvn-pdm-demo/target/site/pmd.html
 
 -----------------------------------------
 
