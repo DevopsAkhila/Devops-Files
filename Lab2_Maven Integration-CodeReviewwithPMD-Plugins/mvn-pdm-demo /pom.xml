@@ -16,7 +16,7 @@
 
     <build>
         <!-- Custom source directory -->
-        <sourceDirectory>Lab excercise-2/src/main/java</sourceDirectory>
+        <sourceDirectory>Lab2_Maven Integration-CodeReviewwithPMD-Plugins</sourceDirectory>
 
         <plugins>
 
