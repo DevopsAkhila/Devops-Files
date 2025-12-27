@@ -1,0 +1,8 @@
+Archiving artifacts
+‘target/*.jar’ doesn’t match anything: even ‘target’ doesn’t exist --> target folder itself did not get created because the goal was clean pmd:pmd
+
+Archiving artifacts
+‘**/*.war’ doesn’t match anything: ‘**’ exists but not ‘**/*.war’
+ERROR: Step ‘Archive the artifacts’ failed: No artifacts found that match the file pattern "**/*.war". Configuration error? --> pom.xml file is written to generate a jar artifact and not a war artifact
+
+
