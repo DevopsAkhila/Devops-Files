@@ -59,14 +59,14 @@ pipeline {
                 stage('Unit Tests') {
                     steps {
                         // Runs unit tests (mvn test)
-                        sh 'mvn -f "Lab excercise-3/pom.xml" test'
+                        sh 'mvn -f "Lab3_JenkinsPipelineIntroduction-DeclarativeSyntax/pom.xml" test'
                     }
                 }
 
                 stage('Integration Tests') {
                     steps {
                         // Runs integration tests + additional checks (verify lifecycle)
-                        sh 'mvn -f "Lab excercise-3/pom.xml" verify'
+                        sh 'mvn -f "Lab3_JenkinsPipelineIntroduction-DeclarativeSyntax/pom.xml" verify'
                     }
                 }
             }
