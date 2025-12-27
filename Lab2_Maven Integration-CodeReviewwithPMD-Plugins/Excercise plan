@@ -1,0 +1,70 @@
+Lab 2: Maven Integration, Code Review with PMD, and Plugins
+-------------------
+Areas Covered
+
+Jenkins + Maven Integration.
+Build Java project using Maven and Jenkins.
+Code review using Maven and Jenkins (PMD).
+Maven introduction with plugins/commands.
+Poll SCM trigger.
+Install plugins in Jenkins.
+----------------------
+
+Requirements
+
+Java 17+ and Maven installed on Jenkins (verify: mvn --version).
+GitHub repo with a Maven-based Java project (e.g., simple app with pom.xml including PMD plugin).
+PMD plugin for Jenkins.
+----------------------
+
+Plan of Execution and Guidance
+
+Install Plugins:
+Manage Jenkins > Manage Plugins > Available > Search/install: Maven Integration, PMD, Git.
+Production Tip: Use a dedicated Jenkins update center mirror for air-gapped environments; audit plugins for vulnerabilities via pluginmanager.jenkins.io.
+Maven Project Setup:
+Repo pom.xml snippet:XML<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.21.2</version>
+            <executions>
+                <execution>
+                    <goals><goal>pmd</goal></goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+Commands to test locally: mvn clean compile and mvn pmd:pmd.
+-------------------------------------
+Guidance: Ensure src/main/java has sample code with violations (e.g., unused imports) for PMD demo.
+-------------------------------------
+Create Maven Freestyle Job:
+New Item > Maven project > Name: Maven-Java-Build.
+Source Management: Git repo URL.
+Build Triggers: Poll SCM (H * * * *).
+Build: Root POM pom.xml > Goals: clean compile pmd:pmd.
+Post-build: Add PMD Publisher (threshold: 0 violations to fail build).
+Production Tip: Use Maven's --batch-mode flag in goals for non-interactive CI; cache .m2/repository via workspace retention.
+Run and Review:
+Build Now > Check console for Maven output.
+View PMD report: Job > PMD result link.
+
+Guidance: Introduce a violation (e.g., add import unused;) and push; job should fail with PMD details.
+----------------------------------------
+
+Solution
+
+Expected Outcome: Successful Maven build generates target/classes; PMD report highlights violations in HTML/Trend charts.
+Verification:
+Console Snippet:text[Maven] clean compile pmd:pmd
+[INFO] --- maven-pmd-plugin:3.21.2:pmd (default-cli) @ myapp ---
+[INFO] Generating "PMD report" report    - 2 violations
+PMD Report: Accessible at lab2/
+Lab excercise-2/mvn-pdm-demo/target/site/pmd.html
+
+-----------------------------------------
+
+Production Guideline: Integrate with Nexus for artifact repo; script: Add to pom.xml<distributionManagement> for uploads.
