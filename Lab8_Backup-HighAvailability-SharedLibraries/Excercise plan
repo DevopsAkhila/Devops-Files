@@ -1,0 +1,51 @@
+Lab 8: Backup, High Availability, Security, and Shared Libraries
+Areas Covered
+
+Backup of Jenkins Server for High Availability.
+Security on Jenkins.
+Shared Library.
+Master and Node Setup (recap for HA).
+
+Requirements
+
+ThinBackup plugin for backups.
+Two Jenkins instances (primary/backup) for HA demo.
+Git repo for shared library.
+
+Plan of Execution and Guidance
+
+Security Configuration:
+Manage Jenkins > Configure Global Security > Enable "Matrix-based security" (admin full, devs build/execute).
+Use HTTPS: Configure with Let's Encrypt.
+Production Tip: Enforce 2FA via plugin; audit logs with Audit Trail plugin.
+Backup for HA:
+Install ThinBackup > Configure: Backup dir /backup, schedule daily.
+Test: Manual backup > Restore on secondary instance.
+Guidance: For HA, use shared NFS for $JENKINS_HOME; sync jobs via API.
+Shared Library:
+New Item > Global Pipeline Libraries > Git repo URL > Load implicitly.
+Library vars/utils.groovy: Define reusable steps like def notifySlack(String msg) { slackSend message: msg }.
+Production Tip: Version libraries (e.g., @Library('shared@1.0') ); peer-review changes.
+Integrate in Pipeline:
+@Library('shared') _ > Use notifySlack('Build started').
+
+
+Solution
+
+Expected Outcome: Secure login required; backup restores jobs; shared lib reuses code.
+Shared Library (vars/utils.groovy):groovydef notifySlack(String message) {
+    slackSend channel: '#jenkins-alerts', color: 'good', message: message
+}
+def backupJob() {
+    sh 'thinBackup --backup'
+}
+Pipeline Usage:groovy@Library('shared') _
+pipeline {
+    agent any
+    stages {
+        stage('Build') { steps { utils.notifySlack('Building...') } }
+    }
+    post { always { utils.backupJob() } }
+}
+Verification: Access denied for non-admin; Restore: Secondary Jenkins shows same jobs. Slack notifies from lib.
+Production Guideline: Automate HA failover with Keepalived/VIP; encrypt secrets with Credentials Binding plugin. Regular backups to S3.
