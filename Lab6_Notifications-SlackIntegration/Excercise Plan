@@ -1,0 +1,50 @@
+Lab 6: Notifications and Slack Integration
+-------------------
+Areas Covered
+
+Notification in Jenkins.
+Integration of Slack tool with Jenkins.
+Setup Slack workspace and channel.
+Slack plugin and configuration in Jenkins.
+Slack integration in pipelines.
+Running Jenkins job from Slack slash commands.
+------------------------
+
+Requirements
+
+Slack workspace with a channel (e.g., #jenkins-alerts).
+Slack Notification plugin.
+--------------------------
+
+Plan of Execution and Guidance
+
+Slack Setup:
+Create app at api.slack.com > Add to workspace > Bot token scopes: chat:write, commands.
+Channel: Invite bot.
+Production Tip: Use incoming webhooks for simple alerts; OAuth for interactive commands.
+Jenkins Configuration:
+Manage Jenkins > Configure System > Slack > Add token and channel.
+Test Connection.
+-------------------
+
+Integrate in Pipeline:
+Post-build: slackSend channel: '#jenkins-alerts', message: "Build ${currentBuild.result}".
+---------------------
+
+Slash Commands:
+Slack app > Enable Slash Commands > Request URL: <jenkins-url>/slack/notifications.
+In pipeline: Use slackin for interactive responses.
+Guidance: Trigger job: /jenkins build First-Pipeline.Production Tip: Rate-limit notifications; use colors (good=green, failure=red) for visual alerts.
+------------------------
+Solution
+
+Expected Outcome: Build success sends green message to Slack; failure red. Slash command triggers job.
+-------------------------
+Pipeline Snippet:groovy
+post {
+    success { slackSend color: 'good', message: "Success: $$ {env.JOB_NAME} # $${env.BUILD_NUMBER}" }
+    failure { slackSend color: 'danger', message: "Failed: $$ {env.JOB_NAME} # $${env.BUILD_NUMBER} (<${env.BUILD_URL}|View>)" }
+}
+--------------------------
+Verification: Slack channel shows message with build link. Command: /jenkins build Maven-Java-Build > Job queues.
+Production Guideline: Archive notifications in centralized logging (ELK stack); avoid sensitive data in messages.
