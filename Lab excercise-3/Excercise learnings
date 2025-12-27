@@ -1,0 +1,227 @@
+
+Below is a **complete, minimal, lab-ready file set** that works with:
+
+* Maven
+* PMD
+* Jenkins Declarative Pipeline
+* Your **Lab 2 Maven repo**
+
+---
+
+# 📁 Required Project Structure (MUST MATCH)
+
+```
+my-maven-repo/
+├── pom.xml
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── com/example/demo/
+│   │           └── Calculator.java
+│   └── test/
+│       └── java/
+│           └── com/example/demo/
+│               └── CalculatorTest.java
+└── README.md   (optional but recommended)
+```
+
+---
+
+# 1️⃣ `pom.xml` (Maven + PMD Integration)
+
+✔ Compatible with Jenkins
+✔ Generates PMD XML for reporting
+✔ Fails build on PMD violations
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>my-maven-repo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+            </plugin>
+
+            <!-- PMD Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.21.2</version>
+                <configuration>
+                    <printFailingErrors>true</printFailingErrors>
+                    <failOnViolation>true</failOnViolation>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>pmd</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
+```
+
+---
+
+# 2️⃣ Application Code (Intentional PMD Smell)
+
+📄 `src/main/java/com/example/demo/Calculator.java`
+
+This class is **intentionally written to trigger PMD warnings** (unused variable, poor practice).
+
+```java
+package com.example.demo;
+
+public class Calculator {
+
+    public int add(int a, int b) {
+        int unused = 10;   // PMD: UnusedLocalVariable
+        return a + b;
+    }
+
+    public int divide(int a, int b) {
+        if (b == 0) {
+            return 0;      // PMD: Avoid returning magic values
+        }
+        return a / b;
+    }
+}
+```
+
+✅ Ensures:
+
+* Build passes
+* PMD finds violations
+* Pipeline fails at Code Review stage (as expected)
+
+---
+
+# 3️⃣ Unit Test (Downstream Equivalent)
+
+📄 `src/test/java/com/example/demo/CalculatorTest.java`
+
+```java
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CalculatorTest {
+
+    @Test
+    void testAdd() {
+        Calculator calc = new Calculator();
+        assertEquals(5, calc.add(2, 3));
+    }
+
+    @Test
+    void testDivide() {
+        Calculator calc = new Calculator();
+        assertEquals(2, calc.divide(4, 2));
+    }
+}
+```
+
+✔ Enables:
+
+* `mvn test`
+* Downstream-style pipeline stage
+* Clean separation of build vs test
+
+---
+
+# 4️⃣ PMD Output (Auto-Generated – No Manual File)
+
+After running:
+
+```bash
+mvn clean verify
+```
+
+Maven will generate:
+
+```
+target/site/pmd.xml
+target/site/pmd.html
+```
+
+These are used by:
+
+* Jenkins PMD plugin
+* Blue Ocean visualization
+* Trend analysis
+
+---
+
+# 5️⃣ Optional: `README.md` (For Lab Clarity)
+
+```md
+# Jenkins Lab 3 – Declarative Pipeline with PMD
+
+This project demonstrates:
+- Maven build lifecycle
+- Jenkins Declarative Pipelines
+- Static code analysis using PMD
+
+PMD violations are intentional for learning purposes.
+```
+
+---
+
+# ✅ Verification Checklist (Before Running Pipeline)
+
+Run locally or on Jenkins node:
+
+```bash
+mvn clean compile
+mvn test
+mvn pmd:pmd
+```
+
+✔ `target/` created
+✔ PMD XML generated
+✔ Tests executed
+
+---
+
+# 🎯 What This Enables in Lab 3
+
+| Lab Requirement               | Covered                  |
+| ----------------------------- | ------------------------ |
+| Freestyle upstream/downstream | Build vs Test separation |
+| Declarative pipeline          | Repo is pipeline-ready   |
+| Pipeline syntax generator     | `git`, `sh mvn` usable   |
+| PMD integration               | Maven-based              |
+| Fail on code quality          | Yes                      |
+| Blue Ocean visualization      | Yes                      |
+
+---
+
+
