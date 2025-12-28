@@ -1,7 +1,5 @@
 pipeline {
     agent any
-
-    stages {
         stages {
         stage('Check Python') {
             steps {
@@ -19,8 +17,6 @@ pipeline {
             steps {
                 sh 'python app.py'
             }
-        }
-    }
 
     post {
         success {
@@ -31,3 +27,4 @@ pipeline {
         }
     }
 }
+        }
