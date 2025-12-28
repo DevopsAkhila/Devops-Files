@@ -2,22 +2,17 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Python Setup & Run') {
+        stage('Python Install & Run') {
             steps {
                 sh '''
-                    # Create venv (install python3-venv on agent if missing)
-                    python3 -m venv venv || echo 'venv exists'
+                    # Upgrade pip for the Jenkins user
+                    python3 -m pip install --user --upgrade pip
 
-                    # Activate venv
-                    . venv/bin/activate
-
-                    # Upgrade pip and install dependencies
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                    # Install dependencies under ~/.local
+                    python3 -m pip install --user -r requirements.txt
 
                     # Run your application
-                    python app.py
+                    python3 your_app.py
                 '''
             }
         }
