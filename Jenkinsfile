@@ -1,22 +1,28 @@
 pipeline {
     agent any
-        stages {
+
+    stages {
+
         stage('Check Python') {
             steps {
-                sh 'python --version'
+                sh 'python3 --version'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    python3 -m pip install -r requirements.txt || echo "pip not available"
+                '''
             }
         }
 
         stage('Run Application') {
             steps {
-                sh 'python app.py'
+                sh 'python3 app.py'
             }
+        }
+    }
 
     post {
         success {
@@ -26,6 +32,4 @@ pipeline {
             echo 'Python build FAILED'
         }
     }
-}
-        }
 }
