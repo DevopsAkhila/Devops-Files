@@ -8,6 +8,9 @@
     <groupId>com.example</groupId>
     <artifactId>java-agent-lab</artifactId>
     <version>1.0</version>
+<configuration>
+    <useModulePath>false</useModulePath>
+</configuration>
 
    
     <build>
