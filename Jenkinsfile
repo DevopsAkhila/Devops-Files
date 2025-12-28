@@ -2,16 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Python Install & Run') {
+        stage('Bootstrap pip & Run') {
             steps {
                 sh '''
-                    # Upgrade pip for the Jenkins user
-                    python3 -m pip install --user --upgrade pip
+                    # Download pip bootstrapper
+                    curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 
-                    # Install dependencies under ~/.local
-                    python3 -m pip install --user -r requirements.txt
+                    # Install pip for Jenkins user
+                    python3 get-pip.py --user
 
-                    # Run your application
+                    # Add local pip to PATH
+                    export PATH=$HOME/.local/bin:$PATH
+
+                    # Verify pip
+                    pip --version
+
+                    # Install dependencies
+                    pip install -r requirements.txt
+
+                    # Run app
                     python3 app.py
                 '''
             }
