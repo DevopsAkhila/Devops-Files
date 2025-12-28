@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'mymaven'   // Jenkins → Global Tool Configuration
-    }
-
-    environment {
-        MAVEN_OPTS = '-Xmx1024m'
+        maven 'mymaven'
     }
 
     stages {
@@ -14,44 +10,28 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo "Building Java branch: ${env.BRANCH_NAME}"
             }
         }
 
-        stage('Compile') {
+        stage('Build') {
             steps {
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Unit Tests') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
+                sh 'mvn clean package'
             }
         }
     }
 
     post {
-        success {
-            echo "Java Build SUCCESS for ${env.BRANCH_NAME}"
-            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-        }
-        failure {
-            echo "Java Build FAILED for ${env.BRANCH_NAME}"
-        }
         always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             cleanWs()
+        }
+
+        success {
+            echo 'Java Build SUCCESS'
+        }
+
+        failure {
+            echo 'Java Build FAILED'
         }
     }
 }
