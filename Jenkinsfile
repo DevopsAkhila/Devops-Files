@@ -10,49 +10,22 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo "Building branch: ${env.BRANCH_NAME}"
             }
         }
 
-        stage('Java Compile') {
-            when {
-                branch 'java'
-            }
+        stage('Build') {
             steps {
-                sh 'mvn compile'
-            }
-        }
-
-        stage('Java Package') {
-            when {
-                branch 'java'
-            }
-            steps {
-                sh 'mvn package'
-            }
-        }
-
-        stage('Python App') {
-            when {
-                branch 'python'
-            }
-            steps {
-                sh '''
-                echo "Python Application"
-                python3 --version
-                pip3 install -r requirements.txt
-                python3 app.py
-                '''
+                sh 'mvn clean package'
             }
         }
     }
 
     post {
         success {
-            echo "Build SUCCESS for ${env.BRANCH_NAME}"
+            echo 'Build SUCCESS'
         }
         failure {
-            echo "Build FAILED for ${env.BRANCH_NAME}"
+            echo 'Build FAILED'
         }
     }
 }
