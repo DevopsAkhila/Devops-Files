@@ -12,7 +12,7 @@ pipeline {
                     python3 -m pip install --user -r requirements.txt
 
                     # Run your application
-                    python3 your_app.py
+                    python3 app.py
                 '''
             }
         }
