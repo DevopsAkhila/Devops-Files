@@ -9,12 +9,10 @@
     <artifactId>java-agent-lab</artifactId>
     <version>1.0</version>
 
-    <!-- =====================
-         SOURCE DIRECTORIES
-         ===================== -->
+   
     <build>
-        <sourceDirectory>Lab5:JenkinsAgents-Controllers-Dynamic Agents-Docker-Pipelines/java-app/src/main/java</sourceDirectory>
-        <testSourceDirectory>Lab5:JenkinsAgents-Controllers-Dynamic Agents-Docker-Pipelines/java-app/src/test/java</testSourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
 
