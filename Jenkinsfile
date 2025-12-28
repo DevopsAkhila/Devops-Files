@@ -17,7 +17,7 @@ pipeline {
                     pip install -r requirements.txt
 
                     # Run your application
-                    python your_app.py
+                    python app.py
                 '''
             }
         }
