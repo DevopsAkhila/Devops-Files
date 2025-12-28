@@ -15,9 +15,7 @@
     </properties>
 
     <build>
-        <!-- Custom source directory -->
-        <sourceDirectory>Lab excercise-2/src/main/java</sourceDirectory>
-
+     
         <plugins>
 
             <!-- Java Compiler -->
