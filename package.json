@@ -1,0 +1,14 @@
+{
+  "name": "nodejs-pipeline-demo",
+  "version": "1.0.0",
+  "description": "A simple Node.js app for Jenkins pipeline demo",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {}
+}
