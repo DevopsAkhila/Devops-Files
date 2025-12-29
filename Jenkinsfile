@@ -1,58 +1,54 @@
-pipeline {
-    agent any
-
-    tools {
-        maven 'mymaven'
+pipeline{
+    agent{
+        docker{
+            image 'python:3.12-slim'
+        }
     }
-
-    stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-                echo "Building branch: ${env.BRANCH_NAME}"
+    environment{
+        VENV = '.venv' //virtual environment variable
+        PYTHONPATH = '.' //python environment/container to be created in the current directory
+    }
+    stages{
+        stage('Clone the repo'){
+            steps{
+                git branch: 'Calculator-python-app', url: 'https://github.com/DevopsAkhila/Devops-Files.git'
             }
         }
-
-        stage('Java Compile') {
-            when {
-                branch 'java'
-            }
-            steps {
-                sh 'mvn compile'
-            }
-        }
-
-        stage('Java Package') {
-            when {
-                branch 'java'
-            }
-            steps {
-                sh 'mvn package'
-            }
-        }
-
-        stage('Python App') {
-            when {
-                branch 'python'
-            }
-            steps {
+        stage('Set up python environment and install dependencies'){
+            steps{
                 sh '''
-                echo "Python Application"
-                python3 --version
-                pip3 install -r requirements.txt
-                python3 app.py
+                # Create the environment
+                python -m venv ${VENV}
+                # Activating the python environment
+                . ${VENV}/bin/activate
+                # Upgrade pip
+                pip install --upgrade pip
+                # Install the dependencies
+                pip install -r requirements.txt
+                '''
+            }
+        }
+        stage('Review the code'){
+            steps{
+                sh '''
+                # Activate the environment
+                . ${VENV}/bin/activate
+                # Run the code review tool
+                flake8 app/ tests/
+                '''
+            }
+        }
+        stage('Run Tests on Application'){
+            steps{
+                sh '''
+                # Activate the environment
+                . ${VENV}/bin/activate
+                # Run the tests
+                pytest --junitxml=reports/results.xml --cov=calculator --cov-report=xml
                 '''
             }
         }
     }
 
-    post {
-        success {
-            echo "Build SUCCESS for ${env.BRANCH_NAME}"
-        }
-        failure {
-            echo "Build FAILED for ${env.BRANCH_NAME}"
-        }
-    }
+
 }
