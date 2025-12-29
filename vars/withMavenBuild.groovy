@@ -1,7 +1,7 @@
 def call(Closure body) {
 
     // Use Jenkins-managed Maven
-    def mvnHome = tool 'maven-3.9'
+    def mvnHome = tool 'MAVEN-3.9'
 
     try {
         echo "Starting Maven build"
