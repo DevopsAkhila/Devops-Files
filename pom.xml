@@ -27,8 +27,7 @@
     </dependencies>
 
     <build>
-             <sourceDirectory>Lab3_JenkinsPipelineIntroduction-DeclarativeSyntax/src/main/java</sourceDirectory>
-             <testSourceDirectory>Lab3_JenkinsPipelineIntroduction-DeclarativeSyntax/src/test/java</testSourceDirectory>
+             <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
         <plugins>
 
             <!-- Compiler Plugin -->
