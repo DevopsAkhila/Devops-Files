@@ -1,0 +1,4 @@
+{
+  "SUCCESS": "Build succeeded for {{JOB}} #{{BUILD}}",
+  "FAILURE": "Build failed for {{JOB}} #{{BUILD}}"
+}
