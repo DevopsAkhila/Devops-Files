@@ -1,0 +1,2 @@
+Standard Maven build started
+Artifacts archived
