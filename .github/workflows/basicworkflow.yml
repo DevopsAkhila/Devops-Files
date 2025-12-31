@@ -1,4 +1,3 @@
----
 name: Basic workflow Demo running linux commands
 on: workflow_dispatch 
 # Manually triggered the workflow execution
