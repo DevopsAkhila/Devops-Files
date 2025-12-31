@@ -1,6 +1,6 @@
 ---
 name: Basic workflow Demo running linux commands
-on: workflow_dispatch // Manually trigger the workflow
+on: workflow_dispatch # Manually trigger the workflow
 jobs:
   job1:
     runs-on: ubuntu-latest
