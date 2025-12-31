@@ -1,0 +1,18 @@
+---
+name: Basic workflow Demo running linux commands
+on: workflow_dispatch // Manually trigger the workflow
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run linux commands
+        run: echo "Hello all"
+  job2:
+    runs-on: ubuntu-24.04
+    steps: 
+      - name: Run multiple linux commands
+        run: |
+          hostname -s 
+          date
+          pwd   
+          ls -la
