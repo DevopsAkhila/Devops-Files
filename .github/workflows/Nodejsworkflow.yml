@@ -1,0 +1,27 @@
+---
+name: Github actions workflow for nodejs code
+on: #trigger the workflow execution
+  push: #restrict the execution of workflow whenever a push is made to the main branch
+    branches:
+      - master
+  pull_request: #restrict the execution of workflow whenever a pull request is created to the main branch
+    branches:
+      - master
+  workflow_dispatch: #manual trigger of the workflow
+jobs:
+    Job1_Build_the_nodejs_code:
+      runs-on: ubuntu-22.04
+      steps:
+        - name: Clone the repo
+          uses: actions/checkout@v4
+        - name: Install nodejs dependencies
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18' #specify the nodejs version as in package.json file
+            cache: 'npm' #cache the npm dependencies to speed up the workflow execution
+        - name: Install node dependencies
+          run: npm ci #ci command is used in the automated environments -clean install of nodejs libraries i.e. the dependencies
+        - name: Execute the test 
+          run: npm test #execute the test cases present in the codebase
+        - name: Build the nodejs code
+          run: npm run build #build the nodejs code using the build script present in package.json file
