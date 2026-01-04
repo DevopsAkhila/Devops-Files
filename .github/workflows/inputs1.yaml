@@ -6,21 +6,21 @@ on:
 inputs:
   runner:
     description: 'Select the runner to use'
-      required: true
-      type: choice
-      options:
-        - ubuntu-latest
-        - windows-latest
-        - macos-latest
-        - self-hosted  
+    required: true
+    type: choice
+    options:
+      - ubuntu-latest
+      - windows-latest
+      - macos-latest
+      - self-hosted  
   job-names:
-      description: 'Select the job to run'
-      required: true
-      type: choice
-      options:
-        - build
-        - test
-        - deploy  
+    description: 'Select the job to run'
+    required: true
+    type: choice
+    options:
+    - build
+    - test
+    - deploy  
 jobs:
   build:
     if: ${{ github.event.inputs.job-names == 'build' }}
