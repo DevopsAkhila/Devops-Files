@@ -1,5 +1,6 @@
+---
+#Inputs demonstrating making a choice
 name: Multiple runners and choose jobs
-
 on:
   workflow_dispatch:
     inputs:
@@ -11,38 +12,32 @@ on:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-          - self-hosted
-
-      job_name:
+      job_names:
         description: 'Select the job to run'
         required: true
         type: choice
         options:
-          - build
-          - test
-          - deploy
-
+        - build
+        - test
+        - deploy  
 jobs:
   build:
-    if: ${{ github.event.inputs.job_name == 'build' }}
-    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    if: ${{ github.event.inputs.job_names == 'build' }}
+    runs-on: ${{ github.event.inputs.runner }}
     steps:
       - name: Build Step
-        run: echo "Running BUILD job on ${{ github.event.inputs.runner }}"
-        shell: bash
+        run: echo "Running Build Job on ${{ github.event.inputs.runner }}"
 
   test:
-    if: ${{ github.event.inputs.job_name == 'test' }}
-    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    if: ${{ github.event.inputs.job_names == 'test' }}
+    runs-on: ${{ github.event.inputs.runner }}
     steps:
       - name: Test Step
-        run: echo "Running TEST job on ${{ github.event.inputs.runner }}"
-        shell: bash
+        run: echo "Running Test Job on ${{ github.event.inputs.runner }}"
 
   deploy:
-    if: ${{ github.event.inputs.job_name == 'deploy' }}
-    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    if: ${{ github.event.inputs.job_names == 'deploy' }}
+    runs-on: ${{ github.event.inputs.runner }}
     steps:
       - name: Deploy Step
-        run: echo "Running DEPLOY job on ${{ github.event.inputs.runner }}"
-        shell: bash
+        run: echo "Running Deploy Job on ${{ github.event.inputs.runner }}"
