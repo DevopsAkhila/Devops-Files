@@ -1,0 +1,49 @@
+name: Multiple runners and choose jobs
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Select the runner to use'
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+          - self-hosted
+
+      job_name:
+        description: 'Select the job to run'
+        required: true
+        type: choice
+        options:
+          - build
+          - test
+          - deploy
+
+jobs:
+  build:
+    if: ${{ github.event.inputs.job_name == 'build' }}
+    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    steps:
+      - name: Build Step
+        run: echo "Running BUILD job on ${{ github.event.inputs.runner }}"
+        shell: bash
+
+  test:
+    if: ${{ github.event.inputs.job_name == 'test' }}
+    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    steps:
+      - name: Test Step
+        run: echo "Running TEST job on ${{ github.event.inputs.runner }}"
+        shell: bash
+
+  deploy:
+    if: ${{ github.event.inputs.job_name == 'deploy' }}
+    runs-on: ${{ github.event.inputs.runner == 'self-hosted' && fromJSON('["self-hosted"]') || github.event.inputs.runner }}
+    steps:
+      - name: Deploy Step
+        run: echo "Running DEPLOY job on ${{ github.event.inputs.runner }}"
+        shell: bash
+
