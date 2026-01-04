@@ -12,7 +12,7 @@ on:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-      job_names:
+      job_name:
         description: 'Select the job to run'
         required: true
         type: choice
