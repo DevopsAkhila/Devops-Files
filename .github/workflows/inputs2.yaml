@@ -1,0 +1,43 @@
+---
+#Inputs demonstrating making a choice
+name: Multiple runners and choose jobs
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Select the runner to use'
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+      job_name:
+        description: 'Select the job to run'
+        required: true
+        type: choice
+        options:
+        - build
+        - test
+        - deploy  
+jobs:
+  build:
+    if: ${{ github.event.inputs.job_names == 'build' }}
+    runs-on: ${{ github.event.inputs.runner }}
+    steps:
+      - name: Build Step
+        run: echo "Running Build Job on ${{ github.event.inputs.runner }}"
+
+  test:
+    if: ${{ github.event.inputs.job_names == 'test' }}
+    runs-on: ${{ github.event.inputs.runner }}
+    steps:
+      - name: Test Step
+        run: echo "Running Test Job on ${{ github.event.inputs.runner }}"
+
+  deploy:
+    if: ${{ github.event.inputs.job_names == 'deploy' }}
+    runs-on: ${{ github.event.inputs.runner }}
+    steps:
+      - name: Deploy Step
+        run: echo "Running Deploy Job on ${{ github.event.inputs.runner }}"
