@@ -12,7 +12,6 @@ inputs:
       - ubuntu-latest
       - windows-latest
       - macos-latest
-      - self-hosted  
   job-names:
     description: 'Select the job to run'
     required: true
