@@ -1,6 +1,6 @@
 ---
 #Inputs demonstrating making a choice
-name: Multiple runners and choose jobs
+name: Multiple runners and choose 1 job and 1 runner
 on:
   workflow_dispatch:
     inputs:
