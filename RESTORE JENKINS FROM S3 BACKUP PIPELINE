@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'BACKUP_FILE',
+            description: 'Enter backup file name from S3 (example: jenkins-backup-42-20251225-121530.tar.gz)'
+        )
+    }
+
+    environment {
+        JENKINS_HOME = "/var/lib/jenkins"
+        RESTORE_DIR = "/tmp/jenkins-restore"
+        S3_BUCKET = "s3://jenkins-server-backup-demo"
+    }
+
+    stages {
+
+        stage('Prepare Restore Directory') {
+            steps {
+                sh '''
+                mkdir -p ${RESTORE_DIR}
+                '''
+            }
+        }
+
+        stage('Download Backup from S3') {
+            steps {
+                sh '''
+                aws s3 cp ${S3_BUCKET}/${BACKUP_FILE} ${RESTORE_DIR}/${BACKUP_FILE}
+                '''
+            }
+        }
+
+        stage('Stop Jenkins') {
+            steps {
+                sh 'systemctl stop jenkins'
+            }
+        }
+
+        stage('Restore Jenkins Data') {
+            steps {
+                sh '''
+                rm -rf ${JENKINS_HOME}/*
+                tar -xzvf ${RESTORE_DIR}/${BACKUP_FILE} -C /
+                '''
+            }
+        }
+
+        stage('Start Jenkins') {
+            steps {
+                sh 'systemctl start jenkins'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Jenkins restored successfully from ${BACKUP_FILE}"
+        }
+        failure {
+            echo "❌ Jenkins restore failed"
+        }
+    }
+}

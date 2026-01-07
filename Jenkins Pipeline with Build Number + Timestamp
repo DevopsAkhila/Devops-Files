@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        JENKINS_HOME = "/var/lib/jenkins"
+        JENKINS_BACKUP_DIR = "/tmp/jenkinsbackup"
+        S3_BUCKET = "s3://jenkins-server-backup-demo"
+    }
+
+    stages {
+
+        stage('Prepare Backup Directory') {
+            steps {
+                sh '''
+                mkdir -p ${JENKINS_BACKUP_DIR}
+                '''
+            }
+        }
+
+        stage('Create Jenkins Backup') {
+            steps {
+                script {
+                    // Generate timestamp
+                    def timestamp = sh(
+                        script: "date +%Y%m%d-%H%M%S",
+                        returnStdout: true
+                    ).trim()
+
+                    env.BACKUP_FILE = "jenkins-backup-${BUILD_NUMBER}-${timestamp}.tar.gz"
+                }
+
+                sh '''
+                tar -czvf ${JENKINS_BACKUP_DIR}/${BACKUP_FILE} ${JENKINS_HOME}
+                '''
+            }
+        }
+
+        stage('Upload Backup to S3') {
+            steps {
+                sh '''
+                aws s3 cp ${JENKINS_BACKUP_DIR}/${BACKUP_FILE} ${S3_BUCKET}/${BACKUP_FILE}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Backup created: ${BACKUP_FILE}"
+        }
+        failure {
+            echo "❌ Backup failed"
+        }
+    }
+}
