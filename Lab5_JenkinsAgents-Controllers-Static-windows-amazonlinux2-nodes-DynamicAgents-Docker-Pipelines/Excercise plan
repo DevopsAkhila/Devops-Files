@@ -1,0 +1,66 @@
+Lab5:Jenkins Agents-Controllers-Dynamic Agents-Docker-Pipelines
+--------------------
+Areas Covered
+
+What is Jenkins Agent, Its responsibilities.
+What is Jenkins Controller and how it connects to agent.
+Master and Agent/Node setup.
+Run Jenkins pipeline on agent.
+Dynamic Agent in Jenkins pipelines.
+Docker pipeline plugin.
+Cached dependencies.
+Build Java/Python code on Dynamic agent.
+-------------------------
+
+Requirements
+
+Jenkins Controller (master) running.
+Docker installed on controller and a separate VM for static agent.
+Docker Pipeline plugin.
+Sample Python script in repo (e.g., pip install requests; python app.py).
+--------------------------
+
+Plan of Execution and Guidance
+
+Master-Agent Setup:
+Manage Jenkins > Manage Nodes > New Node > Permanent Agent > Name: static-agent.
+Launch: Java Web Start on agent VM (download agent.jar, run java -jar agent.jar -jnlpUrl ... -secret ... -workDir /opt/jenkins).
+Production Tip: Use SSH provisioning for agents; scale with Kubernetes plugin for 100+ nodes.
+Run Pipeline on Agent:
+In Jenkinsfile: agent { label 'static-agent' }.
+-------------------------------
+
+Dynamic Agents with Docker:
+Install Docker plugin.
+Jenkinsfile: agent { docker { image 'maven:3.9-jdk-17' } } for Java; docker { image 'python:3.11' } for Python.
+Guidance: For caching, mount volumes: docker { image 'maven:3.9-jdk-17' args '-v /host/.m2:/root/.m2' }.
+Build on Dynamic Agent:
+Stages: Java Maven build; Python pip install -r requirements.txt && python -m unittest.
+Production Tip: Use docker-workspace for persistent volumes; monitor agent resource usage via Metrics plugin.
+------------------------------
+Solution
+
+Expected Outcome: Builds run on specified agents; Docker spins up ephemeral containers.
+Jenkinsfile Snippet (Multi-Language):groovypipeline {
+    agent none
+    stages {
+        stage('Java Build') {
+            agent {
+                docker {
+                    image 'maven:3.9-jdk-17'
+                    args '-v $HOME/.m2:/root/.m2'  // Cache deps
+                }
+            }
+            steps { sh 'mvn clean package' }
+        }
+        stage('Python Build') {
+            agent {
+                label 'static-agent'  // Or docker 'python:3.11'
+            }
+            steps { sh 'pip install -r requirements.txt && python -m unittest' }
+        }
+    }
+}
+----------------------------------------------------------
+Verification: Executor status shows agent usage; Docker logs: docker logs <container-id> confirm Maven/Python execution. Cache: Second run faster (no download).
+Common Issues & Fixes: Connection refused—firewall ports 50000 open. Solution: Configure

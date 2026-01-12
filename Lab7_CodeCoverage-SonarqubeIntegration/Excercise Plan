@@ -1,0 +1,48 @@
+Lab 7: Code Coverage and Sonarqube Integration
+Areas Covered
+
+Code coverage and Sonarqube.
+Sonarqube integration with Jenkins.
+Sonarqube Jenkins pipeline to generate code analysis and code coverage report.
+
+Requirements
+
+SonarQube Docker: docker run -d --name sonarqube -p 9000:9000 sonarqube:community.
+SonarQube Scanner and SonarQube plugin in Jenkins.
+pom.xml with JaCoCo for coverage: <plugin><groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId>...</plugin>.
+
+Plan of Execution and Guidance
+
+SonarQube Setup:
+Access http://localhost:9000 > Create project/token.
+Production Tip: Use PostgreSQL backend for prod; enable auth with LDAP.
+Jenkins Integration:
+Install SonarQube Scanner plugin.
+Global Config: Add server URL/token.
+
+Pipeline Integration:
+Stage: withSonarQubeEnv('SonarQube') { sh 'mvn sonar:sonar' }.
+Add Quality Gate: waitForQualityGate abortPipeline: true.
+Guidance: Run mvn jacoco:report for coverage; push commit with low coverage to test gate failure.Production Tip: Schedule nightly scans; set gates like "Coverage >80%" for prod branches.
+
+Solution
+
+Expected Outcome: Sonar dashboard shows bugs/duplications/coverage; pipeline aborts on gate fail.
+Pipeline Stage:groovystage('Sonar Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh 'mvn clean jacoco:prepare-agent test jacoco:report sonar:sonar -Dsonar.projectKey=myapp'
+        }
+    }
+}
+stage('Quality Gate') {
+    steps {
+        timeout(time: 1, unit: 'HOURS') {
+            waitForQualityGate abortPipeline: true
+        }
+    }
+}
+Verification: Sonar project page: Metrics show coverage % (e.g., 75%); issues list. Pipeline log: "Quality Gate: OK".
+Common Issues & Fixes: Token invalid—regenerate. Solution: Check Jenkins credentials store.
+
+

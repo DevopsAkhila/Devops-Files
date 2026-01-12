@@ -1,0 +1,48 @@
+//Entire pipeline running on single agent
+pipeline {
+    agent { label 'static_windows_node' }
+    tools { maven 'mymaven' }
+
+    stages {
+        stage('Clone the repo') {
+            steps {
+                git branch: 'Calculator-java-app',
+                    url: 'https://github.com/DevopsAkhila/Devops-Files.git'
+                echo "Cloned the repository successfully"
+            }
+        }
+
+        stage('Build the project') {
+            steps {
+                    bat 'mvn clean install'
+                }
+            }
+
+        stage('Test the project') {
+            steps {
+                    bat 'mvn test'
+                }
+            }
+
+        stage('Deploy the project') {
+            steps { echo "Deploying the project..." }
+            post {
+                success {
+                    echo "Deployment successful!"
+                    junit 'target/surefire-reports/*.xml'
+                        archiveArtifacts artifacts: 'target/*.jar'
+                        slackSend(channel: '#all-slack-demo', message: "Deployment successful and Artifact archived!")
+                }
+                    
+                failure {
+                    echo "Deployment failed."
+                  
+                        archiveArtifacts artifacts: 'target/*.jar'
+                         slackSend(channel: '#all-slack-demo', message: 'Deployment failed. Artifact still archived')
+                    }
+                   
+                }
+            }
+        }
+    }
+

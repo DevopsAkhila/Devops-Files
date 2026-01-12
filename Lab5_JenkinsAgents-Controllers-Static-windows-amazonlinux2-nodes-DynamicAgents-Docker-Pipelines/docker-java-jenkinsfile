@@ -1,0 +1,48 @@
+pipeline{
+    agent{
+        docker{
+            image 'maven'
+            args '-u root -v /root/.m2:/root/.m2'
+        }
+    }
+   
+    stages{
+        stage('Checkout code'){
+            steps{
+                git branch: 'Calculator-java-app', url: 'https://github.com/DevopsAkhila/Devops-Files.git'
+        }
+    }
+    
+    stage('Run Tests on Application'){
+        steps{
+            sh 'mvn test'
+            sh 'mvn pmd:pmd'
+        }
+    }
+    stage('Build Application'){
+        steps{
+            sh 'mvn clean package'
+        }
+    }
+    stage('Archive Artifacts'){
+        steps{
+            sh '''
+JAR=$(ls target/*.jar | head -n 1)
+mv "$JAR" target/JavaCalculatorApp-v${BUILD_NUMBER}-$(date +%Y%m%d%H%M%S).jar
+'''
+           archiveArtifacts artifacts: 'target/*.jar'
+           archiveArtifacts artifacts: 'target/surefire-reports/*.xml'
+        }
+        post
+{
+            success {
+                slackSend(channel: '#all-slack-demo', message: "Artifact ${BUILD_NUMBER}archived successfully!")
+            }
+            failure {
+                slackSend(channel: '#all-slack-demo', message: "Artifact ${BUILD_NUMBER} archived failed!")
+            }
+
+        }
+    }
+}
+}
